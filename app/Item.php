@@ -48,9 +48,15 @@ class Item extends Model
         if(! $userID)
             throw new AppCustomHttpException("user not logged in", 401);
 
-        $items = Item::select('id','user_id','title','description','created_at')
-                      ->orderBy('created_at','desc')
-                      ->paginate(20);
+        if($with_userID)
+            $items = Item::select('id','user_id','title','description','created_at')
+                         ->where('user_id','=',$userID)
+                         ->orderBy('created_at','desc')
+                         ->paginate(20);
+        else
+            $items = Item::select('id','user_id','title','description','created_at')
+                          ->orderBy('created_at','desc')
+                          ->paginate(20);
 
         foreach ($items as $item) {
             $item->image_path =  (string)$item->user_id.'/'.(string)$item->id.'.jpeg';
@@ -64,9 +70,6 @@ class Item extends Model
                 $comment->time = $comment->created_at->diffForHumans();
             }
         }
-
-        if($with_userID)
-            $items = $items->where('user_id','=',$userID);
 
         return $items->values()->all();
     }
