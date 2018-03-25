@@ -62,11 +62,12 @@ class Comment extends Model
         if(! $userID)
              throw new AppCustomHttpException("user not logged in", 401);
 
-        if(empty(Item::find($itemID)))
+        $item = Item::find($itemID);
+        if(empty($item))
             throw new AppCustomHttpException("Item not found", 404);
 
-        if(Item::find($itemID)->user()->value('id') != User::getUserID($request) &&
-           ! User::isUserAdmin($request))
+        if($item->user()->value('id') != User::getUserID($request) &&
+           ! User::isUserAdmin($request) && !$item->is_public)
             throw new AppCustomHttpException("action not allowed", 403);
 
         $comment = new Comment;

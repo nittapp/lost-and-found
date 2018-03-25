@@ -30,20 +30,20 @@ class User extends Authenticatable
     }
 
     static public function getUserID($request){
-        return 1;
-       // $user = User::where('username',$request->header('X-NITT-APP-USERNAME'))->first();
-       // return $user->id;
+        // return 1;
+       $user = User::where('username',$request->header('X-NITT-APP-USERNAME'))->first();
+       return $user->id;
     }
 
     static public function isUserAdmin($request){
-        return true;
-        // return $request->header('X-NITT-APP-IS-ADMIN') == 'true';
+        // return true;
+        return $request->header('X-NITT-APP-IS-ADMIN') == 'true';
     }
 
-    static public function create($rollno){
+    static public function create($rollno, $name){
         $user = new User();
         $user->username = $rollno;
-        $user->name = "N/A";
+        $user->name = $name;
         $user->save();
     }
 }

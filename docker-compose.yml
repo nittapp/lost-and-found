@@ -1,0 +1,57 @@
+version: '2'
+services:
+
+  app:
+    build:
+      context: ./
+      dockerfile: dockerfiles/app.dockerfile
+    volumes:
+        - ./app:/var/www/app
+        - ./resources:/var/www/resources
+        - ./database:/var/www/database
+        - ./public:/var/www/public
+        - ./routes:/var/www/routes
+        - ./tests:/var/www/tests
+    env_file: '.env'
+    environment:
+      - "DB_HOST=db"
+      - "REDIS_HOST=cache"
+      - "DB_PORT=3306"
+    container_name: laf-app
+
+  web:
+    build:
+      context: ./
+      dockerfile: dockerfiles/web.dockerfile
+    volumes:
+        - ./logs/nginx-error.log:/var/log/nginx/error.log
+        - ./logs/nginx-access.log:/var/log/nginx/access.log
+        - ./public:/var/www/public       
+        - ./default.conf:/etc/nginx/sites-available/default
+        - ./default.conf:/etc/nginx/sites-enabled/default
+    ports:
+        - 8080:80
+    container_name: laf-server
+
+  db:
+    image: mysql:5.6
+    volumes:
+      - ./dbdata:/var/lib/mysql
+    environment:
+      - "MYSQL_DATABASE=homestead"
+      - "MYSQL_USER=homestead"
+      - "MYSQL_PASSWORD=secret"
+      - "MYSQL_ROOT_PASSWORD=secret"
+    container_name: laf-db
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    links:
+        - db
+    ports:
+        - "3000:80"
+    container_name: laf-pma
+    
+volumes:
+    dbdata:
