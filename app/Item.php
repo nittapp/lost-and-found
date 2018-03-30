@@ -86,7 +86,7 @@ class Item extends Model
             throw new AppCustomHttpException("item not found", 404);
 
          $itemUserID = $item->user_id;
-         if(! User::isUserAdmin($request) || $itemUserID != $userID )
+         if(! User::isUserAdmin($request) && $itemUserID != $userID )
               throw new AppCustomHttpException("Access denied", 403);
                   
          $item->delete();

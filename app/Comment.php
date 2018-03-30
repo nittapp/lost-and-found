@@ -48,7 +48,7 @@ class Comment extends Model
         if(empty(Comment::where('item_id',$itemID)->first()))
             throw new AppCustomHttpException("comments not found", 404);
 
-        if($item->user()->value('id') != User::getUserID($request) || !$item->is_public)
+        if($item->user()->value('id') != User::getUserID($request) && !$item->is_public)
             throw new AppCustomHttpException("action not allowed", 403);
 
         $comments = Comment::where('item_id',$itemID)->orderBy('created_at','desc')->get();
